@@ -81,7 +81,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
             var parameters = new NameValueCollection { { RedmineKeys.INCLUDE, RedmineKeys.RELATIONS } };
 
             var issue = manager.GetObject<Issue>("56841", parameters);
-            MessageBox.Show("Issue: " + issue);
+            MessageBox.Show("Issue: " + issue); 
 
         }
     }
