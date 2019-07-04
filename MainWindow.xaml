@@ -5,9 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Auto_MindMeister_Backup_to_Redmine"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="465" Width="501">
     <Grid>
-        <DataGrid HorizontalAlignment="Left" Height="322" Margin="10,10,0,0" VerticalAlignment="Top" Width="571"/>
-        <Button Content="Button" HorizontalAlignment="Left" Margin="659,70,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click_1"/>
+        <StackPanel HorizontalAlignment="Left" Height="414" Margin="10,10,0,0" VerticalAlignment="Top" Width="473">
+            <StackPanel Height="32" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Label Content="Токен MindMeister"/>
+                <TextBox TextWrapping="Wrap" x:Name="MMToken" Width="300"/>
+            </StackPanel>
+            <StackPanel Height="32" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                <Label Content="Токен Redmine"/>
+                <TextBox TextWrapping="Wrap" x:Name="RMToken" Width="300"/>
+            </StackPanel>
+            <Button Height="32" Width="100" Content="Клоц" HorizontalAlignment="Center" Margin="10" Click="Button_Click_2"/>
+            <ListView Height="250" >
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </StackPanel>
+
     </Grid>
 </Window>

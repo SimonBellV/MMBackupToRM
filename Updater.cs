@@ -30,13 +30,19 @@ namespace Auto_MindMeister_Backup_to_Redmine
     class Updater
     {
         private List<DataUnit> connections;
-        private readonly string accessTokenMM = "c91bfc3e7fde0dfb10e3628ce36b35dbd7c3038871a2ab06ca9ae41d0f752b10";
+        private string accessTokenMM;// = "c91bfc3e7fde0dfb10e3628ce36b35dbd7c3038871a2ab06ca9ae41d0f752b10";
         private string csvPath;
-        private readonly string accessTokenRM = "93f9f3c2405c367516c1b81723f63714e07fdefb";
+        private string accessTokenRM;// = "93f9f3c2405c367516c1b81723f63714e07fdefb";
 
         public Updater()
         {
             connections = new List<DataUnit>();
+        }
+
+        public void Auth(string mmt, string rmt)
+        {
+            accessTokenMM = mmt;
+            accessTokenRM = rmt;
         }
 
         public void GetCardAsync()

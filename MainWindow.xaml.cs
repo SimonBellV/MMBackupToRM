@@ -27,14 +27,9 @@ namespace Auto_MindMeister_Backup_to_Redmine
             upd = new Updater();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            upd.GetCardAsync();
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            upd.UpdateTask();
+            upd.Auth(MMToken.Text, RMToken.Text);
         }
     }
 }
