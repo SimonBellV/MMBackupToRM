@@ -15,6 +15,7 @@ using System.Xml.Linq;
 using CsvHelper;
 using Redmine.Net.Api;
 using Redmine.Net.Api.Types;
+using Newtonsoft.Json.Linq;
 
 namespace Auto_MindMeister_Backup_to_Redmine
 {
@@ -30,8 +31,6 @@ namespace Auto_MindMeister_Backup_to_Redmine
 
     class Updater
     {
-        private const string apikey = "820cfae6eb216a92f7c9bec42a668b92";
-        private const string apisecret = "9e4cb8b2e708cf1e";
         private Connections db;
         private string accessTokenMM;
         private string accessTokenRM;
@@ -39,6 +38,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
 
         public Updater()
         {
+            db = new Connections();
             //connections = new List<DataUnit>();
         }
 
@@ -50,12 +50,30 @@ namespace Auto_MindMeister_Backup_to_Redmine
 
         public void GetCardsToUpdate()
         {
-            /*if (db.ConnectionsDB.Count() == 0)
+            if (db.ConnectionsDB.Count() == 0)
             {
                 MessageBox.Show("База данных пуста!");
                 return;
-            }*/
-            string URLString = "https://www.mindmeister.com/services/rest?api_key=" + apikey + "&method=mm.auth.getFrob&response_format=xml";
+            }
+            foreach (var conn in db.ConnectionsDB)
+            {
+                WebRequest reqGET = WebRequest.Create(@"https://www.mindmeister.com/api/v2/maps/"+conn.MindCardNumber+"?access_token=" + accessTokenMM);
+                WebResponse resp = reqGET.GetResponse();
+                Stream stream = resp.GetResponseStream();
+                StreamReader sr = new StreamReader(stream);
+                string s = sr.ReadToEnd();
+                JObject parsed = JObject.Parse(s);
+                //if(Convert.ToDateTime(conn.LastUpdateDate) < parsed.Property("updated_at"))
+                    
+                MessageBox.Show(parsed.ToString());
+                //add code to analyze last update time and if bad - add to leftLB
+            }
+        }
+
+        //public void GetCardsToUpdate() // using api v1
+       // {
+            
+            /*string URLString = "https://www.mindmeister.com/services/rest?api_key=" + apikey + "&method=mm.auth.getFrob&response_format=xml";
             URLString = GenerateSignature(URLString);
             string res = "";
             using (var client = new WebClient()) // to download card
@@ -78,7 +96,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
             foreach (var el in xDoc.Root.Elements())
                 MessageBox.Show(el.ToString());*/
             //authTokenMM = xDoc.Root.Element("frob").Value;
-            MessageBox.Show(frob + "\n" + res);
+            //MessageBox.Show(frob + "\n" + res);
 
             //URLString = "https://www.mindmeister.com/services/rest?api_key="+ apikey +" &auth_token=KykOYg01ni3PNScRqXEo&method=mm.auth.getToken&response_format=xml&api_sig=b5d688daab8d236d7bbbfd1e2443467a";
             
@@ -95,9 +113,9 @@ namespace Auto_MindMeister_Backup_to_Redmine
                     client.DownloadFile("https://www.mindmeister.com/api/v2/maps/"+conn.MindCardNumber+".mind?access_token=" + accessTokenMM, conn.RMProjectName+".mind");
                 }
             }*/
-        }
+      //  }
 
-        private string MD5Hash(string apisig)
+        /*private string MD5Hash(string apisig)
         {
             StringBuilder hash = new StringBuilder();
             MD5CryptoServiceProvider md5provider = new MD5CryptoServiceProvider();
@@ -108,7 +126,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
                 hash.Append(bytes[i].ToString("x2"));
             }
             return hash.ToString();
-        }
+        }*/
 
         public void GetConnections()
         {
@@ -134,7 +152,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
             }*/
         }
 
-        private string GenerateSignature(string parames)
+        /*private string GenerateSignature(string parames)
         {
             string hash = parames.Remove(0, parames.IndexOf("?")+1);
             hash = hash.Replace("&", "");
@@ -143,7 +161,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
             hash = MD5Hash(hash);
             parames = parames + "&api_sig=" + hash;
             return parames;
-        }
+        }*/
 
         public void UpdateTask()
         {
