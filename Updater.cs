@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,28 +16,25 @@ using Redmine.Net.Api.Types;
 namespace Auto_MindMeister_Backup_to_Redmine
 {
     [Serializable]
-    class DataUnit
+
+    public class Connections : DbContext
     {
-        public DataUnit(int mMCardID, string rMProjectName, double lastUpdateDate)
+        public Connections() : base("DefaultConnection")
         {
-            MMCardID = mMCardID;
-            RMProjectName = rMProjectName ?? throw new ArgumentNullException(nameof(rMProjectName));
-            LastUpdateDate = lastUpdateDate;
         }
-        public int MMCardID { get; set; }
-        public string RMProjectName { get; set; }
-        public double LastUpdateDate { get; set; }
+        public DbSet<Connection> ConnectionsDB { get; set; }
     }
+
     class Updater
     {
-        private List<DataUnit> connections;
-        private string accessTokenMM;// = "c91bfc3e7fde0dfb10e3628ce36b35dbd7c3038871a2ab06ca9ae41d0f752b10";
+        private Connections db;
+        private string accessTokenMM;
         private string csvPath;
-        private string accessTokenRM;// = "93f9f3c2405c367516c1b81723f63714e07fdefb";
+        private string accessTokenRM;
 
         public Updater()
         {
-            connections = new List<DataUnit>();
+            //connections = new List<DataUnit>();
         }
 
         public void Auth(string mmt, string rmt)
@@ -47,19 +45,19 @@ namespace Auto_MindMeister_Backup_to_Redmine
 
         public void GetCardAsync()
         {
-            if (connections.Count == 0) return;
+            /*if (db.ConnectionsDB. .Count == 0) return;
             using (var client = new WebClient())
             {
                 foreach (var conn in connections)
                 {
                     client.DownloadFile("https://www.mindmeister.com/api/v2/maps/"+conn.RMProjectName+".mind?access_token=" + accessTokenMM, conn.RMProjectName+".mind");
                 }
-            }
+            }*/
         }
 
         public void GetConnections()
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
+            /*Microsoft.Win32.OpenFileDialog openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
             openFileDialog1.Filter = "CSV файлы(*.csv)|*.csv";
             openFileDialog1.ShowDialog();
             csvPath = openFileDialog1.FileName;
@@ -69,16 +67,16 @@ namespace Auto_MindMeister_Backup_to_Redmine
                 var records = csv.GetRecords<DataUnit>();
                 connections = new List<DataUnit>();
                 connections.AddRange(records);
-            }
+            }*/
         }
 
         public void SaveConnections()
         {
-            using (var writer = new StreamWriter(csvPath, false, Encoding.UTF8))
+            /*using (var writer = new StreamWriter(csvPath, false, Encoding.UTF8))
             using (var csv = new CsvWriter(writer))
             {
                 csv.WriteRecords(connections);
-            }
+            }*/
         }
 
         public void UpdateTask()

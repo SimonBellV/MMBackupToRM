@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Auto_MindMeister_Backup_to_Redmine
 {
-    class Connection : INotifyPropertyChanged
+    public class Connection : INotifyPropertyChanged
     {
         private string mindCardNum;
         private string redmineIssue;
