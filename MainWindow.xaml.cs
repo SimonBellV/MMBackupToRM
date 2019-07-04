@@ -30,6 +30,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             upd.Auth(MMToken.Text, RMToken.Text);
+            upd.GetCardsToUpdate();
         }
     }
 }
