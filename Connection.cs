@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Auto_MindMeister_Backup_to_Redmine
@@ -8,6 +9,15 @@ namespace Auto_MindMeister_Backup_to_Redmine
         private string mindCardNum;
         private string redmineIssue;
         private string date;
+
+        public Connection() { }
+
+        public Connection(string mindCardNum, string redmineIssue, string date)
+        {
+            this.mindCardNum = mindCardNum ?? throw new ArgumentNullException(nameof(mindCardNum));
+            this.redmineIssue = redmineIssue ?? throw new ArgumentNullException(nameof(redmineIssue));
+            this.date = date ?? throw new ArgumentNullException(nameof(date));
+        }
 
         public int ID { get; set; }
 

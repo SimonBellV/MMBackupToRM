@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Auto_MindMeister_Backup_to_Redmine"
         mc:Ignorable="d"
-        Title="MainWindow" Height="502" Width="501">
+        Title="Бекапирование Mindmeister to Redmine" Height="502" Width="501" ResizeMode="NoResize" Icon="redmine.ico">
     <Grid Margin="0,0,0,2">
         <StackPanel HorizontalAlignment="Left" Height="461" Margin="10,10,0,0" VerticalAlignment="Top" Width="473">
             <StackPanel Height="32" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
@@ -26,11 +26,11 @@
                     </ListView.View>
                 </ListView>
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <Button Content="Обновить" Width="75" Height="45" Margin="5"/>
-                    <Button Content="Отменить" Width="75" Height="45" Margin="5"/>
+                    <Button Content="Обновить" Width="75" Height="45" Margin="5" Click="Button_Click_2"/>
+                    <Button Content="Отменить" Width="75" Height="45" Margin="5" Click="Button_Click_3"/>
                 </StackPanel>
                 
-                <ListView Height="250" Width="190" x:Name="RightRB">
+                <ListView Height="250" Width="190" x:Name="RightLB">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn/>
@@ -38,7 +38,7 @@
                     </ListView.View>
                 </ListView>
             </StackPanel>
-            <Button Height="32" Width="160" Content="Обновить задачи" HorizontalAlignment="Center" Margin="10"/>
+            <Button Height="32" Width="160" Content="Обновить задачи" HorizontalAlignment="Center" Margin="10" Click="Button_Click_1"/>
         </StackPanel>
 
     </Grid>
