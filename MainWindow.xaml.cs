@@ -102,7 +102,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
                     }
                     RedmineManager manager = new RedmineManager("https://redmine.minsvyazdnr.ru", accessTokenRM);
                     var parameters = new NameValueCollection { { RedmineKeys.INCLUDE, RedmineKeys.RELATIONS } };
-                    var issue = manager.GetObject<Issue>("57082", parameters);
+                    var issue = manager.GetObject<Issue>(res.RedmineIssueNumber, parameters);
 
                     byte[] documentData = System.IO.File.ReadAllBytes(documentPath);
                     Upload attachment = manager.UploadFile(documentData);
@@ -114,7 +114,7 @@ namespace Auto_MindMeister_Backup_to_Redmine
                     attachments.Add(attachment);
 
                     issue.Uploads = attachments;
-                    manager.UpdateObject("57082", issue);
+                    manager.UpdateObject(res.RedmineIssueNumber, issue);
 
                     var conInDB = db.ConnectionsDB.SingleOrDefault(b => b.MindCardNumber == id);
                     if (conInDB != null)
