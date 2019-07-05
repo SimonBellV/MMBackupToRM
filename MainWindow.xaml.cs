@@ -44,41 +44,59 @@ namespace Auto_MindMeister_Backup_to_Redmine
         public MainWindow()
         {
             InitializeComponent();
+            UpdB.IsEnabled = false;
             db = new Connections();
         }
 
         public void GetCardsToUpdate()
         {
-            LeftLB.Items.Clear();
-            RightLB.Items.Clear();
-            if (db.ConnectionsDB.Count() == 0)
+            if (UpdB.IsEnabled)
             {
-                MessageBox.Show("База данных пуста!");
-                return;
+                LeftLB.Items.Clear();
+                RightLB.Items.Clear();
+                if (db.ConnectionsDB.Count() == 0)
+                {
+                    MessageBox.Show("База данных пуста!");
+                    return;
+                }
+                dbCards = new List<MindCard>();
+                foreach (var conn in db.ConnectionsDB)
+                {
+                    WebRequest reqGET = WebRequest.Create(@"https://www.mindmeister.com/api/v2/maps/" + conn.MindCardNumber + "?access_token=" + accessTokenMM);
+                    WebResponse resp = reqGET.GetResponse();
+                    Stream stream = resp.GetResponseStream();
+                    StreamReader sr = new StreamReader(stream);
+                    string s = sr.ReadToEnd();
+                    JObject parsed = JObject.Parse(s);
+                    dbCards.Add(new MindCard(parsed[@"root_id"].ToString(),
+                                             parsed[@"title"].ToString(),
+                                             Convert.ToDateTime(parsed[@"updated_at"].ToString())));
+                    if (Convert.ToDateTime(conn.LastUpdateDate) < dbCards.Last().lastUpdateTime)
+                    {
+                        string t = (string)(dbCards.Last().name).Normalize();
+                        LeftLB.Items.Add(t);
+                    }
+                }
+                if (LeftLB.Items.Count == 0)
+                    MessageBox.Show("Нет новых карт для обновления!");
             }
-            dbCards = new List<MindCard>();
-            foreach (var conn in db.ConnectionsDB)
+            else
             {
-                WebRequest reqGET = WebRequest.Create(@"https://www.mindmeister.com/api/v2/maps/" + conn.MindCardNumber + "?access_token=" + accessTokenMM);
-                WebResponse resp = reqGET.GetResponse();
-                Stream stream = resp.GetResponseStream();
-                StreamReader sr = new StreamReader(stream);
-                string s = sr.ReadToEnd();
-                JObject parsed = JObject.Parse(s);
-                dbCards.Add(new MindCard(parsed[@"root_id"].ToString(),
-                                         parsed[@"title"].ToString(),
-                                         Convert.ToDateTime(parsed[@"updated_at"].ToString())));
-                if (Convert.ToDateTime(conn.LastUpdateDate) < dbCards.Last().lastUpdateTime)
-                    LeftLB.Items.Add(dbCards.Last().name);
+                MessageBox.Show("Введите токены!");
             }
-            if (LeftLB.Items.Count == 0)
-                MessageBox.Show("Нет новых карт для обновления!");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (MMToken.Text == "" || RMToken.Text == "")
+            {
+                MessageBox.Show("Введите токены!");
+                UpdB.IsEnabled = false;
+                return;
+            }
             accessTokenMM = MMToken.Text;
             accessTokenRM = RMToken.Text;
+            UpdB.IsEnabled = true;
             GetCardsToUpdate();
         }
 
@@ -89,30 +107,24 @@ namespace Auto_MindMeister_Backup_to_Redmine
                 MessageBox.Show("Задайте карты для обновления!");
                 return;
             }
+            if (!PDFCB.IsChecked.Value && !MINDCB.IsChecked.Value)
+            {
+                MessageBox.Show("Задайте формат сохранения данных!");
+                return;
+            }
             foreach (var item in RightLB.Items)
             {
                 var id = dbCards.Find(x => x.name == item.ToString()).ID;
                 var res = db.ConnectionsDB.Where(b => b.MindCardNumber == id).FirstOrDefault();
                 if (res != null)
                 {
-                    string documentPath = res.MindCardNumber.ToString() + ".pdf";
-                    using (var client = new WebClient())
-                    {
-                        client.DownloadFile(@"https://www.mindmeister.com/api/v2/maps/" + res.MindCardNumber + ".pdf?access_token=" + accessTokenMM, documentPath);
-                    }
-                    RedmineManager manager = new RedmineManager("https://redmine.minsvyazdnr.ru", accessTokenRM);
                     var parameters = new NameValueCollection { { RedmineKeys.INCLUDE, RedmineKeys.RELATIONS } };
-                    var issue = manager.GetObject<Issue>(res.RedmineIssueNumber, parameters);
-
-                    byte[] documentData = System.IO.File.ReadAllBytes(documentPath);
-                    Upload attachment = manager.UploadFile(documentData);
-                    attachment.FileName = documentPath;
-                    attachment.Description = "Файл загружен при помощи подпрограммы автобекапирования";
-                    attachment.ContentType = "application/pdf";
+                    RedmineManager manager = new RedmineManager("https://redmine.minsvyazdnr.ru", accessTokenRM);
+                    var issue = manager.GetObject<Issue>(res.RedmineIssueNumber, parameters);            
 
                     IList<Upload> attachments = new List<Upload>();
-                    attachments.Add(attachment);
-
+                    if (PDFCB.IsChecked.Value) attachments.Add(CreateAttachment(res.MindCardNumber, "pdf", ref manager));
+                    if (MINDCB.IsChecked.Value) attachments.Add(CreateAttachment(res.MindCardNumber, "mind", ref manager));
                     issue.Uploads = attachments;
                     manager.UpdateObject(res.RedmineIssueNumber, issue);
 
@@ -129,6 +141,21 @@ namespace Auto_MindMeister_Backup_to_Redmine
             MessageBox.Show("Все файлы обновлены!");
             LeftLB.Items.Clear();
             RightLB.Items.Clear();
+        }
+
+        private Upload CreateAttachment(string mindCardNumber, string type, ref RedmineManager manager)
+        {
+            string documentPath = mindCardNumber.ToString() + "." + type;
+            using (var client = new WebClient())
+            {
+                client.DownloadFile(@"https://www.mindmeister.com/api/v2/maps/" + mindCardNumber + "." + type + "?access_token=" + accessTokenMM, documentPath);
+            }
+            byte[] documentData = System.IO.File.ReadAllBytes(documentPath);
+            Upload attachment = manager.UploadFile(documentData);
+            attachment.FileName = documentPath;
+            attachment.Description = "Файл загружен при помощи подпрограммы автобекапирования";
+            attachment.ContentType = "application/pdf";
+            return attachment;
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e)

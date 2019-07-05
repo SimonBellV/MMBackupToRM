@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Auto_MindMeister_Backup_to_Redmine"
         mc:Ignorable="d"
         Title="Бекапирование Mindmeister to Redmine" Height="502" Width="501" ResizeMode="NoResize" Icon="redmine.ico">
     <Grid Margin="0,0,0,2">
@@ -28,6 +27,8 @@
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                     <Button Content="Обновить" Width="75" Height="45" Margin="5" Click="Button_Click_2"/>
                     <Button Content="Отменить" Width="75" Height="45" Margin="5" Click="Button_Click_3"/>
+                    <CheckBox Content=".pdf" x:Name="PDFCB" IsChecked="True" Margin="5"/>
+                    <CheckBox Content=".mind" x:Name="MINDCB" IsChecked="True" Margin="5"/>
                 </StackPanel>
                 
                 <ListView Height="250" Width="190" x:Name="RightLB">
@@ -38,8 +39,7 @@
                     </ListView.View>
                 </ListView>
             </StackPanel>
-            <Button Height="32" Width="160" Content="Обновить задачи" HorizontalAlignment="Center" Margin="10" Click="Button_Click_1"/>
+            <Button Height="32" Width="160" x:Name="UpdB" Content="Обновить задачи" HorizontalAlignment="Center" Margin="10" Click="Button_Click_1"/>
         </StackPanel>
-
     </Grid>
 </Window>
