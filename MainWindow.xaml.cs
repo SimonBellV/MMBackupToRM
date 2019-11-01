@@ -63,19 +63,23 @@ namespace Auto_MindMeister_Backup_to_Redmine
                 foreach (var conn in db.ConnectionsDB)
                 {
                     WebRequest reqGET = WebRequest.Create(@"https://www.mindmeister.com/api/v2/maps/" + conn.MindCardNumber + "?access_token=" + accessTokenMM);
-                    WebResponse resp = reqGET.GetResponse();
-                    Stream stream = resp.GetResponseStream();
-                    StreamReader sr = new StreamReader(stream);
-                    string s = sr.ReadToEnd();
-                    JObject parsed = JObject.Parse(s);
-                    dbCards.Add(new MindCard(parsed[@"root_id"].ToString(),
-                                             parsed[@"title"].ToString(),
-                                             Convert.ToDateTime(parsed[@"updated_at"].ToString())));
-                    if (Convert.ToDateTime(conn.LastUpdateDate) < dbCards.Last().lastUpdateTime)
+                    try
                     {
-                        string t = (string)(dbCards.Last().name).Normalize();
-                        LeftLB.Items.Add(t);
+                        WebResponse resp = reqGET.GetResponse();
+                        Stream stream = resp.GetResponseStream();
+                        StreamReader sr = new StreamReader(stream);
+                        string s = sr.ReadToEnd();
+                        JObject parsed = JObject.Parse(s);
+                        dbCards.Add(new MindCard(parsed[@"root_id"].ToString(),
+                                                 parsed[@"title"].ToString(),
+                                                 Convert.ToDateTime(parsed[@"updated_at"].ToString())));
+                        if (Convert.ToDateTime(conn.LastUpdateDate) < dbCards.Last().lastUpdateTime)
+                        {
+                            string t = (string)(dbCards.Last().name).Normalize();
+                            LeftLB.Items.Add(t);
+                        }
                     }
+                    catch (Exception e) { }
                 }
                 if (LeftLB.Items.Count == 0)
                     MessageBox.Show("Нет новых карт для обновления!");
